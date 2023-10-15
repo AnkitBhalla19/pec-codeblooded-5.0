@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Two Page App</title>
+  <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+
+<body>
+  <h1>Page 1</h1>
+  <input type="file" id="csvFile" accept=".csv">
+  <button id="submitBtn" onclick="uploadCSV()">Submit</button>
+  <div id="message"></div>
+  <script>
+    function uploadCSV() {
+      const fileInput = document.getElementById("csvFile");
+      const messageDiv = document.getElementById("message");
+
+      if (fileInput.files.length === 0) {
+        messageDiv.innerHTML = "Please select a CSV file.";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const fileName = file.name;
+
+      if (fileName.endsWith(".csv")) {
+        messageDiv.innerHTML = `Uploading ${fileName}...`;
+
+        const formData = new FormData();
+        formData.append("csvFile", file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            messageDiv.innerHTML = data.message;
+            window.location.href = '/page2';
+          })
+          .catch(error => {
+            messageDiv.innerHTML = "An error occurred while uploading the file.";
+          });
+      } else {
+        messageDiv.innerHTML = "Please select a valid CSV file.";
+      }
+    }
+  </script>
+</body>
+
+</html>
